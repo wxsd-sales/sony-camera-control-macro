@@ -18,7 +18,7 @@ This macro communicates with Sony cameras that commands set via CGI and has supp
         Set: 'analytics/ptzautoframing.cgi',      // CGI Command Settings (Set) Path
         Inq: 'command/inquiry.cgi'                // CGI Command Inquiry (Inq) Path
       },
-      values: [                                   // Array of CGI Command Paramter Names and Values
+      values: [                                   // Array of CGI Command Parameter Names and Values
         {
           name: 'On',                             // Text which will be displayed on the UI Extension 
           value: 'on'                             // CGI Command Parameter value
