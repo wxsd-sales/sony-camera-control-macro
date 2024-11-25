@@ -1,19 +1,44 @@
-# Sony Camera Control Macro
+![image](https://github.com/user-attachments/assets/2ea8304c-7bb0-45ca-b652-e5864c5ea255)# Sony Camera Control Macro
 
-This is an example macro which lets you control a Sony camera via CGI HTTP Commands
+This is an example macro which lets you control a Sony camera via CGI HTTP Commands using a UI Extension panel on a RoomOS Device.
 
 
 ## Overview
 
-Go into detail about the implementation.   3-4 Sentences
-**HOW** the implementation works. You need not give end-to-end details but an overview.
+This macro communicates with Sony cameras that commands set via CGI and has support for the following features;
 
+* Command to Auto UI Extension Generation:
 
+    This builds its UI Extension panel controls based on the CGI Commands and Parameter you want it to control. Simply define the CGI Command Parameters, Set/Inq Paths and Values and the macro will generate the UI Extension itself.
+    ```javascript
+    {
+      name: 'PtzAutoFramingAutoStartEnable',      // Row Name
+      parameter: 'PtzAutoFramingAutoStartEnable', // CGI Command Parameter
+      cgi: {
+        Set: 'analytics/ptzautoframing.cgi',      // CGI Command Settings (Set) Path
+        Inq: 'command/inquiry.cgi'                // CGI Command Inquiry (Inq) Path
+      },
+      values: [                                   // Array of CGI Command Paramter Names and Values
+        {
+          name: 'On',                             // Text which will be displayed on the UI Extension 
+          value: 'on'                             // CGI Command Parameter value
+        },
+        {
+        name: 'Off',                              // Text which will be displayed on the UI Extension 
+          value: 'off'                            // CGI Command Parameter value
+        }
+      ]
+    }
+    ```
+* UI State Synchronization:
 
-### Flow Diagram
+    When the macro first starts, it will query the Cameras settings based on the configured CGI Commands and Parameters and will update the UI Extension Values.
+    
+* HTTP Digest Authentication:
 
-<!-- *MANDATORY*  Insert Your Flow Diagram Here (if small PoC, alternative option is to include break down how it works here instead of diagram) -->
-![image/gif](insert img link here)
+    CGI HTTP Commands on Sony cameras require HTTP Digest for Authentication. This macro features a custom HTTP Digest Authentication wrapped around the HTTP Client xAPI commands. 
+    
+    Warning: This implementation hasn't been fully tested and isn't guaranteed to work without issue.
 
 
 
@@ -21,49 +46,32 @@ Go into detail about the implementation.   3-4 Sentences
 
 ### Prerequisites & Dependencies: 
 
-- Is this dependant on having another repo
-- Insert pre-requisites in bullets
-- Insert pre-requisite here  Also state any assumptions that you may have made about the user.
-- Limit nested bullets
+- Codec EQ or Codec Pro with RoomOS 11.x or above
+- Web admin access to the device to upload the macro
+- Sony Camera (SRG-A40) to control
 
-
-<!-- GETTING STARTED -->
 
 ### Installation Steps:
-1.  Include step one here
-    ```sh
-    insert line of code here if applicable
-    ```
-2.  Insert step two here
-    Insert screenshot, if applicable
-    
+
+1. Download the ``sony-camera-controls.js`` file and upload it to your Webex Devices Macro editor via the web interface.
+2. Configure the macro layouts config array by adding or removing the layouts you require.
+3. Enable the Macro on the editor.
     
     
 ## Demo
 
-<!-- Insert link to the website below (if deployed). -->
-Check out our live demo, available [here](<insert link>)!
-
-<!-- Keep the following statement -->
 *For more demos & PoCs like this, check out our [Webex Labs site](https://collabtoolbox.cisco.com/webex-labs).
 
 
-<!-- Update your vidcast title, video screenshot, vidcast/youtube link & name -->
-[![Your Video Title ](assets/peer_support_main.PNG)](https://www.youtube.com/watch?v=SqZhiC8jHhU&t=10s, "<insert demo name here>")
-
-
-
 ## License
-<!-- MAKE SURE an MIT license is included in your Repository. If another license is needed, verify with management. This is for legal reasons.--> 
 
-<!-- Keep the following statement -->
 All contents are licensed under the MIT license. Please see [license](LICENSE) for details.
 
 
 ## Disclaimer
-<!-- Keep the following here -->  
- Everything included is for demo and Proof of Concept purposes only. Use of the site is solely at your own risk. This site may contain links to third party content, which we do not warrant, endorse, or assume liability for. These demos are for Cisco Webex usecases, but are not Official Cisco Webex Branded demos.
+
+Everything included is for demo and Proof of Concept purposes only. Use of the site is solely at your own risk. This site may contain links to third party content, which we do not warrant, endorse, or assume liability for. These demos are for Cisco Webex use cases, but are not Official Cisco Webex Branded demos.
 
 
 ## Questions
-Please contact the WXSD team at [wxsd@external.cisco.com](mailto:wxsd@external.cisco.com?subject=RepoName) for questions. Or, if you're a Cisco internal employee, reach out to us on the Webex App via our bot (globalexpert@webex.bot). In the "Engagement Type" field, choose the "API/SDK Proof of Concept Integration Development" option to make sure you reach our team. 
+Please contact the WXSD team at [wxsd@external.cisco.com](mailto:wxsd@external.cisco.com?subject=sony-camera-control-macro) for questions. Or, if you're a Cisco internal employee, reach out to us on the Webex App via our bot (globalexpert@webex.bot). In the "Engagement Type" field, choose the "API/SDK Proof of Concept Integration Development" option to make sure you reach our team. 
