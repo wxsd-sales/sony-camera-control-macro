@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/2ea8304c-7bb0-45ca-b652-e5864c5ea255)# Sony Camera Control Macro
+# Sony Camera Control Macro
 
 This is an example macro which lets you control a Sony camera via CGI HTTP Commands using a UI Extension panel on a RoomOS Device.
 
