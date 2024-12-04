@@ -25,7 +25,7 @@ import xapi from 'xapi';
 
 const config = {
   camera: {
-    ip: '169.254.1.30',
+    ip: '169.254.1.201',
     username: 'admin',
     password: ''
   },
@@ -41,7 +41,7 @@ const config = {
       parameter: 'PtzAutoFraming',
       cgi: {
         Set: 'analytics/ptzautoframing.cgi',
-        Inq: 'command/inquiry.cgi'
+        Inq: 'command/inquiry.cgi?inq=PtzAutoFraming'
       },
       values: [
         {
@@ -59,7 +59,7 @@ const config = {
       parameter: 'PtzAutoFramingAutoStartEnable', // CGI Command Parameter
       cgi: {
         Set: 'analytics/ptzautoframing.cgi',      // CGI Command Settings (Set) Path
-        Inq: 'command/inquiry.cgi'                // CGI Command Inquiry (Inq) Path
+        Inq: 'command/inquiry.cgi?inq=PtzAutoFraming'                // CGI Command Inquiry (Inq) Path
       },
       values: [                                   // Array of CGI Command Paramter Names and Values
         {
@@ -77,7 +77,7 @@ const config = {
       parameter: 'HdmiColor',
       cgi: {
         Set: 'command/project.cgi',
-        Inq: 'command/inquiry.cgi'
+        Inq: 'command/inquiry.cgi?inq=project'
       },
       values: [
         {
@@ -164,10 +164,12 @@ async function syncUI() {
 async function setParameter(cgi, parameter, value) {
   console.log('Setting Parameter:', parameter, 'to value:', value)
 
-  const referer = `Referer: http://${config.camera.ip}`
+  const referer = `Referer: http://${config.camera.ip}/index.html?lang=en`;
+  const hostHeader = `Host: ${config.camera.ip}`;
+
   const result = await digestRequest({
     method: 'GET',
-    headers: [referer],
+    headers: [referer, hostHeader],
     url: `http://${config.camera.ip}`,
     parameters: cgi + '?' + parameter + '=' + value,
     auth: { username: config.camera.username, password: config.camera.password, type: 'digest' }
@@ -185,13 +187,14 @@ async function setParameter(cgi, parameter, value) {
 async function getParameter(cgi, parameter) {
   console.log('Getting parameters:', parameter, '- cgi:', cgi)
 
-  const referer = `Referer: http://${config.camera.ip}`
+  const referer = `Referer: http://${config.camera.ip}/index.html?lang=en`
+  const hostHeader = `Host: ${config.camera.ip}`;
 
   const result = await digestRequest({
     method: 'GET',
-    headers: [referer],
+    headers: [referer, hostHeader],
     url: `http://${config.camera.ip}`,
-    parameters: cgi + '?inq=' + parameter.trim(),
+    parameters: cgi,
     auth: { username: config.camera.username, password: config.camera.password, type: 'digest' }
   })
 
@@ -261,7 +264,7 @@ async function digestRequest({ method, headers, url, parameters, data, auth, dig
   if (statusCode != 401) return result
 
   // Find www-authentication hearder if present in response
-  const wwwAuth = responseHeaders.find(header => header.Key == 'www-authenticate')?.Value
+  const wwwAuth = responseHeaders.find(header => header.Key.toLowerCase() == 'www-authenticate')?.Value
 
   // If 401 with www-authentication hearder return raw response 
   if (!wwwAuth) return result
@@ -278,12 +281,13 @@ async function digestRequest({ method, headers, url, parameters, data, auth, dig
   console.debug('wwwAuth:', wwwAuth, 'auth:', auth)
 
   // Generate a URL from previous request
-  const uri = getURIFromURL(url);
+  const uri = getURIFromURL(Url);
+  console.log('URI', uri, 'URL:', url)
 
   // Create Digest Header from www-authentication, auth, uri, and HTTP Method
   const newDigest = createHttpDigestHeader({ ...parsedWwwAuth, ...auth, uri, method, timeout })
 
-  return await request({ method, headers, url, parameters, auth, digest: newDigest })
+  return await digestRequest({ method, headers, url, parameters, auth, digest: newDigest })
 
 }
 
